@@ -9,6 +9,7 @@ import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.databinding.DialogBufferBinding;
 import com.fongmi.android.tv.impl.BufferListener;
 import com.fongmi.android.tv.setting.PlayerSetting;
+import com.fongmi.android.tv.utils.SliderUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class BufferDialog extends BaseAlertDialog {
@@ -32,11 +33,11 @@ public class BufferDialog extends BaseAlertDialog {
 
     @Override
     protected void initView() {
-        binding.slider.setValue(value = PlayerSetting.getBuffer());
+        SliderUtil.setValue(binding.slider, value = PlayerSetting.getBuffer());
     }
 
     private void onPositive(DialogInterface dialog, int which) {
-        ((BufferListener) requireParentFragment()).setBuffer((int) binding.slider.getValue());
+        ((BufferListener) requireParentFragment()).setBuffer(Math.round(SliderUtil.snap(binding.slider, binding.slider.getValue())));
     }
 
     private void onNegative(DialogInterface dialog, int which) {

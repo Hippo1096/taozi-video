@@ -35,7 +35,7 @@ public class DanmakuAdapter extends RecyclerView.Adapter<DanmakuAdapter.ViewHold
     }
 
     public DanmakuAdapter addAll(List<Danmaku> items) {
-        if (items == null) return this;
+        if (items == null || items.isEmpty()) return this;
         mItems.addAll(items);
         notifyItemRangeInserted(0, mItems.size());
         return this;
@@ -71,16 +71,12 @@ public class DanmakuAdapter extends RecyclerView.Adapter<DanmakuAdapter.ViewHold
         public ViewHolder(@NonNull AdapterDanmakuBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
-            itemView.setClickable(true);
-            itemView.setFocusable(true);
             itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View view) {
-            int position = getBindingAdapterPosition();
-            if (position == RecyclerView.NO_POSITION) return;
-            listener.onItemClick(mItems.get(position));
+            listener.onItemClick(mItems.get(getLayoutPosition()));
         }
     }
 }

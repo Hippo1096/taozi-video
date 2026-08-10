@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.os.IBinder;
 import android.provider.Settings;
@@ -17,7 +18,6 @@ import android.view.inputmethod.InputMethodManager;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.core.view.WindowInsetsControllerCompat;
-import androidx.core.view.ViewCompat;
 
 import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.BuildConfig;
@@ -33,11 +33,18 @@ import java.util.regex.Pattern;
 public class Util {
 
     private static final Pattern EPISODE = Pattern.compile("(?i)(?:ep|第|e|[\\-\\.\\s])\\s?(\\d{1,4})");
-    private static volatile String serial;
 
     public static void toggleFullscreen(Activity activity, boolean fullscreen) {
         if (fullscreen) hideSystemUI(activity);
         else showSystemUI(activity);
+    }
+
+    public static void moveToBackground(Activity activity) {
+        try {
+            activity.moveTaskToBack(true);
+        } catch (NullPointerException ignored) {
+            activity.startActivity(new Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK));
+        }
     }
 
     public static void hideSystemUI(Activity activity) {
@@ -133,11 +140,7 @@ public class Util {
     }
 
     public static String getSerial() {
-        if (serial != null) return serial;
-        synchronized (Util.class) {
-            if (serial == null) serial = Shell.exec("getprop ro.serialno").replace("\n", "");
-            return serial;
-        }
+        return Shell.exec("getprop ro.serialno").replace("\n", "");
     }
 
     public static String getMac(String name) {
@@ -153,9 +156,8 @@ public class Util {
     }
 
     public static String getDeviceName() {
-        String model = TextUtils.isEmpty(Build.MODEL) ? "Android" : Build.MODEL.trim();
-        String manufacturer = TextUtils.isEmpty(Build.MANUFACTURER) ? "" : Build.MANUFACTURER.trim();
-        if (TextUtils.isEmpty(manufacturer)) return model;
+        String model = Build.MODEL;
+        String manufacturer = Build.MANUFACTURER;
         return model.startsWith(manufacturer) ? model : manufacturer + " " + model;
     }
 
@@ -178,8 +180,6 @@ public class Util {
 
     public static boolean isFullscreen(Activity activity) {
         if (activity == null || activity.getWindow() == null) return false;
-        WindowInsetsCompat insets = ViewCompat.getRootWindowInsets(activity.getWindow().getDecorView());
-        if (insets != null) return isLeanback() || !insets.isVisible(WindowInsetsCompat.Type.systemBars());
         return isLeanback() || (activity.getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN) != 0;
     }
 

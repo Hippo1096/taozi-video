@@ -12,7 +12,4 @@ public abstract class SiteDao extends BaseDao<Site> {
 
     @Query("SELECT * FROM Site")
     public abstract List<Site> findAll();
-
-    @Query("DELETE FROM Site")
-    public abstract void delete();
 }

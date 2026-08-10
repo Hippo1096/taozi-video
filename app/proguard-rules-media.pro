@@ -27,9 +27,11 @@
     native <methods>;
 }
 
--keep class tv.danmaku.ijk.media.player.** { *; }
--keepclassmembers class tv.danmaku.ijk.media.player.** { *; }
--keepattributes *Annotation*,InnerClasses,EnclosingMethod
+-keep, includedescriptorclasses class androidx.media3.decoder.ffmpeg.FfmpegAudioDecoder {
+  private java.nio.ByteBuffer growOutputBuffer(androidx.media3.decoder.SimpleDecoderOutputBuffer, int, int);
+}
+
+-keep class is.xyz.mpv.MPVLib { *; }
 
 -keep class androidx.media3.decoder.VideoDecoderOutputBuffer { *; }
 -keep class androidx.media3.decoder.DecoderInputBuffer { *; }
@@ -56,9 +58,9 @@
   <init>(long, android.os.Handler, androidx.media3.exoplayer.video.VideoRendererEventListener, int);
 }
 
--dontnote androidx.media3.decoder.ffmpeg.ExperimentalFfmpegVideoRenderer
--keepclassmembers class androidx.media3.decoder.ffmpeg.ExperimentalFfmpegVideoRenderer {
-  <init>(long, android.os.Handler, androidx.media3.exoplayer.video.VideoRendererEventListener, int);
+-dontnote androidx.media3.decoder.ffmpeg.FfmpegVideoRenderer
+-keepclassmembers class androidx.media3.decoder.ffmpeg.FfmpegVideoRenderer {
+  <init>(android.content.Context, long, android.os.Handler, androidx.media3.exoplayer.video.VideoRendererEventListener, int);
 }
 
 -dontnote androidx.media3.decoder.opus.LibopusAudioRenderer
@@ -71,9 +73,16 @@
   <init>(android.os.Handler, androidx.media3.exoplayer.audio.AudioRendererEventListener, androidx.media3.exoplayer.audio.AudioSink);
 }
 
--dontnote androidx.media3.decoder.iamf.LibiamfAudioRenderer
--keepclassmembers class androidx.media3.decoder.iamf.LibiamfAudioRenderer {
-  <init>(android.content.Context, android.os.Handler, androidx.media3.exoplayer.audio.AudioRendererEventListener, androidx.media3.exoplayer.audio.AudioSink);
+-dontnote androidx.media3.decoder.iamf.IamfAudioRenderer$Builder
+-keepclasseswithmembers class androidx.media3.decoder.iamf.IamfAudioRenderer$Builder {
+  <init>(androidx.media3.exoplayer.audio.AudioSink);
+  androidx.media3.decoder.iamf.IamfAudioRenderer$Builder setEventHandlerAndListener(android.os.Handler, androidx.media3.exoplayer.audio.AudioRendererEventListener);
+  androidx.media3.decoder.iamf.IamfAudioRenderer$Builder setOutputSampleType(int);
+  androidx.media3.decoder.iamf.IamfAudioRenderer$Builder setChannelOrdering(int);
+  androidx.media3.decoder.iamf.IamfAudioRenderer$Builder setRequestedOutputLayout(int);
+  androidx.media3.decoder.iamf.IamfAudioRenderer$Builder setRequestedMixPresentationId(long);
+  androidx.media3.decoder.iamf.IamfAudioRenderer$Builder setEnableIntegratedBinaural(boolean);
+  androidx.media3.decoder.iamf.IamfAudioRenderer build();
 }
 
 -dontnote androidx.media3.decoder.ffmpeg.FfmpegAudioRenderer
@@ -140,6 +149,7 @@
   <init>();
   androidx.media3.effect.DefaultVideoFrameProcessor$Factory build();
   androidx.media3.effect.DefaultVideoFrameProcessor$Factory$Builder setEnableReplayableCache(boolean);
+  androidx.media3.effect.DefaultVideoFrameProcessor$Factory$Builder setOutputSurfaceSizeAdjustmentEnabled(boolean);
 }
 
 -dontnote androidx.media3.effect.SingleInputVideoGraph$Factory
@@ -179,6 +189,20 @@
 
 -keepclasseswithmembers class androidx.media3.exoplayer.image.ImageOutput {
   void onImageAvailable(long, android.graphics.Bitmap);
+}
+
+-dontnote androidx.media3.exoplayer.util.DebugTextViewHelper
+-keep class androidx.media3.exoplayer.util.DebugTextViewHelper {
+  <init>(androidx.media3.exoplayer.ExoPlayer, android.widget.TextView);
+  void start();
+  void stop();
+}
+
+-dontnote androidx.media3.mpvplayer.MpvPlayer
+-keepclassmembers class androidx.media3.mpvplayer.MpvPlayer {
+  boolean toggleGeneralStats();
+  void setOsdSurfaceView(android.view.SurfaceView);
+  void clearOsdSurfaceView(android.view.SurfaceView);
 }
 
 -keepnames class androidx.media3.transformer.CompositionPlayer {}

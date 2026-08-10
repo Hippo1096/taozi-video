@@ -15,7 +15,4 @@ public abstract class DeviceDao extends BaseDao<Device> {
 
     @Query("DELETE FROM Device")
     public abstract void delete();
-
-    @Query("DELETE FROM Device WHERE uuid = :uuid")
-    public abstract void delete(String uuid);
 }

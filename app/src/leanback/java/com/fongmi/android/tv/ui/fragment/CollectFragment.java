@@ -8,17 +8,15 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.leanback.widget.ArrayObjectAdapter;
-import androidx.leanback.widget.FocusHighlight;
-import androidx.leanback.widget.HorizontalGridView;
 import androidx.leanback.widget.ItemBridgeAdapter;
 import androidx.leanback.widget.ListRow;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewbinding.ViewBinding;
 
+import com.fongmi.android.tv.Product;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.bean.Collect;
 import com.fongmi.android.tv.bean.Result;
-import com.fongmi.android.tv.bean.Style;
 import com.fongmi.android.tv.bean.Vod;
 import com.fongmi.android.tv.databinding.FragmentTypeBinding;
 import com.fongmi.android.tv.model.SiteViewModel;
@@ -44,8 +42,6 @@ public class CollectFragment extends BaseFragment implements CustomScroller.Call
     private SiteViewModel mViewModel;
     private Collect mCollect;
     private String mKeyword;
-    private int mColumn;
-    private int[] mSpec;
 
     public static CollectFragment newInstance(String keyword, Collect collect) {
         Bundle args = new Bundle();
@@ -77,21 +73,12 @@ public class CollectFragment extends BaseFragment implements CustomScroller.Call
     }
 
     private void setRecyclerView() {
-        setGridSpec();
         CustomSelector selector = new CustomSelector();
-        selector.addPresenter(ListRow.class, new CustomRowPresenter(16, FocusHighlight.ZOOM_FACTOR_NONE, HorizontalGridView.FOCUS_SCROLL_ALIGNED), VodPresenter.class);
+        selector.addPresenter(ListRow.class, new CustomRowPresenter(16), VodPresenter.class);
         mBinding.recycler.setAdapter(new ItemBridgeAdapter(mAdapter = new ArrayObjectAdapter(selector)));
         mBinding.recycler.addOnScrollListener(mScroller = new CustomScroller(this));
         mBinding.recycler.setHeader(getActivity(), R.id.result, R.id.recycler);
         mBinding.recycler.setVerticalSpacing(ResUtil.dp2px(16));
-    }
-
-    private void setGridSpec() {
-        int width = Math.max(ResUtil.dp2px(360), ResUtil.getScreenWidth() - ResUtil.dp2px(232));
-        int spacing = ResUtil.dp2px(16);
-        mColumn = Math.max(3, Math.min((width + spacing) / (ResUtil.dp2px(150) + spacing), 6));
-        int itemWidth = (width - spacing * (mColumn - 1)) / mColumn;
-        mSpec = new int[]{itemWidth, (int) (itemWidth / 0.75f)};
     }
 
     private void setViewModel() {
@@ -104,7 +91,7 @@ public class CollectFragment extends BaseFragment implements CustomScroller.Call
 
     private boolean checkLastSize(List<Vod> items) {
         if (mLast == null || items.isEmpty()) return false;
-        int size = mColumn - mLast.size();
+        int size = Product.getColumn() - mLast.size();
         if (size == 0) return false;
         size = Math.min(size, items.size());
         mLast.addAll(mLast.size(), items.subList(0, size));
@@ -119,8 +106,8 @@ public class CollectFragment extends BaseFragment implements CustomScroller.Call
     public void addVideo(List<Vod> items) {
         if (checkLastSize(items) || getActivity() == null || getActivity().isFinishing()) return;
         List<ListRow> rows = new ArrayList<>();
-        VodPresenter presenter = new VodPresenter(this, Style.rect(), mSpec);
-        for (List<Vod> part : Lists.partition(items, mColumn)) {
+        VodPresenter presenter = new VodPresenter(this);
+        for (List<Vod> part : Lists.partition(items, Product.getColumn())) {
             mLast = new ArrayObjectAdapter(presenter);
             mLast.addAll(0, part);
             rows.add(new ListRow(mLast));
@@ -150,5 +137,6 @@ public class CollectFragment extends BaseFragment implements CustomScroller.Call
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        if (mBinding != null && !isVisibleToUser) mBinding.recycler.moveToTop();
     }
 }

@@ -2,7 +2,6 @@ package com.fongmi.android.tv.utils;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;
-import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -22,9 +21,6 @@ import com.github.catvod.utils.Path;
 
 import java.io.File;
 import java.io.InputStream;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 public class FileChooser {
@@ -52,15 +48,11 @@ public class FileChooser {
     }
 
     public void show(String mimeType, String[] mimeTypes) {
-        show(mimeType, mimeTypes, false);
-    }
-
-    public void show(String mimeType, String[] mimeTypes, boolean allowMultiple) {
         Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
         intent.setType(mimeType);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, allowMultiple);
+        intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false);
         intent.putExtra("android.content.extra.SHOW_ADVANCED", true);
         List<ResolveInfo> resolveInfos = App.get().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
         if (Util.isLeanback() || resolveInfos.isEmpty() || resolveInfos.get(0).activityInfo.packageName.contains("frameworkpackagestubs")) {
@@ -68,10 +60,6 @@ public class FileChooser {
         } else {
             launcher.launch(Intent.createChooser(intent, ""));
         }
-    }
-
-    public void showDirectory() {
-        launcher.launch(new Intent(App.get(), FileActivity.class).putExtra("select_dir", true));
     }
 
     public static boolean isValid(Context context, Uri uri) {
@@ -86,29 +74,13 @@ public class FileChooser {
         return getPathFromUri(App.get(), uri);
     }
 
-    public static List<String> getPathsFromIntent(Intent intent) {
-        List<String> paths = new ArrayList<>();
-        if (intent == null) return paths;
-        ClipData clipData = intent.getClipData();
-        if (clipData != null) {
-            for (int i = 0; i < clipData.getItemCount(); i++) addPath(paths, clipData.getItemAt(i).getUri());
-        }
-        addPath(paths, intent.getData());
-        return paths;
-    }
-
-    private static void addPath(List<String> paths, Uri uri) {
-        String path = getPathFromUri(uri);
-        if (path != null && !path.isEmpty() && !paths.contains(path)) paths.add(path);
-    }
-
     private static String getPathFromUri(Context context, Uri uri) {
         if (uri == null) return null;
         String path = null;
         if (DocumentsContract.isDocumentUri(context, uri)) path = getPathFromDocumentUri(context, uri);
         else if (ContentResolver.SCHEME_CONTENT.equals(uri.getScheme())) path = getDataColumn(context, uri);
         else if (ContentResolver.SCHEME_FILE.equalsIgnoreCase(uri.getScheme())) path = uri.getPath();
-        return path != null ? URLDecoder.decode(path, StandardCharsets.UTF_8) : createFileFromUri(context, uri);
+        return path != null ? Uri.decode(path) : createFileFromUri(context, uri);
     }
 
     private static String getPathFromDocumentUri(Context context, Uri uri) {
@@ -132,6 +104,8 @@ public class FileChooser {
         String fileName = getNameColumn(context, uri);
         if (docId.startsWith("raw:")) {
             return docId.replaceFirst("raw:", "");
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && docId.startsWith("msf:")) {
+            return getDataColumn(context, ContentUris.withAppendedId(MediaStore.Downloads.getContentUri(MediaStore.VOLUME_EXTERNAL), Long.parseLong(docId.substring(4))));
         } else if (fileName != null) {
             return Environment.getExternalStorageDirectory() + "/Download/" + fileName;
         } else {

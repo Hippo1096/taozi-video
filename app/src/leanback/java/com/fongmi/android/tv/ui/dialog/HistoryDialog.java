@@ -14,7 +14,6 @@ public class HistoryDialog extends BaseAlertDialog implements ConfigAdapter.OnCl
 
     private DialogHistoryBinding binding;
     private ConfigAdapter adapter;
-    private ConfigListener listener;
     private boolean readOnly;
     private int type;
 
@@ -44,12 +43,6 @@ public class HistoryDialog extends BaseAlertDialog implements ConfigAdapter.OnCl
 
     public void show(FragmentActivity activity) {
         show(activity.getSupportFragmentManager(), null);
-        if (activity instanceof ConfigListener) listener = (ConfigListener) activity;
-    }
-
-    public void show(FragmentActivity activity, ConfigListener listener) {
-        show(activity.getSupportFragmentManager(), null);
-        this.listener = listener;
     }
 
     @Override
@@ -68,12 +61,12 @@ public class HistoryDialog extends BaseAlertDialog implements ConfigAdapter.OnCl
         binding.recycler.setItemAnimator(null);
         binding.recycler.setHasFixedSize(false);
         binding.recycler.addItemDecoration(new SpaceItemDecoration(1, 16));
-        binding.recycler.setAdapter(adapter.readOnly(readOnly).addAllExcludingCurrent(type, com.fongmi.android.tv.api.config.VodConfig.getUrl()));
+        binding.recycler.setAdapter(adapter.readOnly(readOnly).addAll(type));
     }
 
     @Override
     public void onTextClick(Config item) {
-        if (listener != null) listener.setConfig(item);
+        ((ConfigListener) requireActivity()).setConfig(item);
         dismiss();
     }
 

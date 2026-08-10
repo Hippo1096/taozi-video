@@ -7,6 +7,7 @@ import com.fongmi.android.tv.databinding.DialogBufferBinding;
 import com.fongmi.android.tv.impl.BufferListener;
 import com.fongmi.android.tv.setting.PlayerSetting;
 import com.fongmi.android.tv.utils.KeyUtil;
+import com.fongmi.android.tv.utils.SliderUtil;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class BufferDialog extends BaseAlertDialog {
@@ -29,12 +30,14 @@ public class BufferDialog extends BaseAlertDialog {
 
     @Override
     protected void initView() {
-        binding.slider.setValue(PlayerSetting.getBuffer());
+        SliderUtil.setValue(binding.slider, PlayerSetting.getBuffer());
     }
 
     @Override
     protected void initEvent() {
-        binding.slider.addOnChangeListener((slider, value, fromUser) -> ((BufferListener) requireActivity()).setBuffer((int) value));
+        binding.slider.addOnChangeListener((slider, value, fromUser) -> {
+            if (fromUser) ((BufferListener) requireActivity()).setBuffer(Math.round(SliderUtil.snap(slider, value)));
+        });
         binding.slider.setOnKeyListener((view, keyCode, event) -> {
             boolean enter = KeyUtil.isEnterKey(event);
             if (enter) dismiss();

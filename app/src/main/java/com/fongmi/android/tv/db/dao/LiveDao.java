@@ -15,7 +15,4 @@ public abstract class LiveDao extends BaseDao<Live> {
 
     @Query("SELECT * FROM Live WHERE name = :name")
     public abstract Live find(String name);
-
-    @Query("DELETE FROM Live")
-    public abstract void delete();
 }

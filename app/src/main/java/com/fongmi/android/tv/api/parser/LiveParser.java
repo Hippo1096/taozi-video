@@ -13,7 +13,6 @@ import com.github.catvod.net.OkHttp;
 import com.github.catvod.utils.Json;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -44,16 +43,6 @@ public class LiveParser {
         String[] splits = line.split(" ");
         for (String split : splits) for (String keyword : keywords) if (split.contains(keyword)) return split.split("=")[1].replace("\"", "");
         return "";
-    }
-
-    private static boolean isMetaChannel(String name) {
-        String text = name == null ? "" : name.trim().toLowerCase(Locale.ROOT);
-        return text.startsWith("更新时间") || text.startsWith("更新日期") || text.startsWith("update time") || text.startsWith("update date") || text.startsWith("last update");
-    }
-
-    private static boolean isPlayableUrl(String url) {
-        String text = url == null ? "" : url.trim();
-        return text.contains("://");
     }
 
     public static void start(Live live) throws Exception {
@@ -93,7 +82,7 @@ public class LiveParser {
     private static void m3u(Live live, String text) {
         Setting setting = Setting.create();
         Catchup catchup = Catchup.create();
-        Channel channel = null;
+        Channel channel = Channel.create("");
         text = text.replace("\r\n", "\n").replace("\r", "");
         for (String line : text.split("\n")) {
             if (Thread.interrupted()) break;
@@ -107,13 +96,8 @@ public class LiveParser {
                 if (live.getEpg().isEmpty()) live.setEpg(extract(line, URL_TVG).replace("\"", ""));
                 if (live.getEpg().isEmpty()) live.setEpg(extract(line, "tvg-url=", "url-tvg="));
             } else if (line.startsWith("#EXTINF:")) {
-                String name = extract(line, NAME);
-                if (isMetaChannel(name)) {
-                    channel = null;
-                    continue;
-                }
                 Group group = live.find(Group.create(extract(line, GROUP), live.isPass()));
-                channel = group.find(Channel.create(name));
+                channel = group.find(Channel.create(extract(line, NAME)));
                 channel.setUa(extract(line, HTTP_USER_AGENT));
                 channel.setTvgName(extract(line, TVG_NAME));
                 channel.setNumber(extract(line, TVG_CHNO));
@@ -124,9 +108,8 @@ public class LiveParser {
                 unknown.setSource(extract(line, CATCHUP_SOURCE));
                 unknown.setReplace(extract(line, CATCHUP_REPLACE));
                 channel.setCatchup(Catchup.decide(unknown, catchup));
-            } else if (channel != null && !line.startsWith("#")) {
+            } else if (!line.startsWith("#") && line.contains("://")) {
                 String[] parts = line.split("\\|", 2);
-                if (!isPlayableUrl(parts[0])) continue;
                 if (parts.length > 1) setting.headers(parts[1]);
                 channel.getUrls().add(parts[0]);
                 setting.copy(channel).clear();
@@ -143,14 +126,12 @@ public class LiveParser {
             if (setting.find(line)) setting.check(line);
             if (line.contains("#genre#")) setting.clear();
             if (line.contains("#genre#")) live.getGroups().add(Group.create(split[0], live.isPass()));
-            if (split.length > 1 && isMetaChannel(split[0])) continue;
-            if (split.length > 1) {
+            if (split.length > 1 && live.getGroups().isEmpty()) live.getGroups().add(Group.create());
+            if (split.length > 1 && split[1].contains("://")) {
+                Group group = live.getGroups().get(live.getGroups().size() - 1);
+                Channel channel = group.find(Channel.create(split[0]));
                 for (String url : split[1].split("#")) {
                     String[] parts = url.split("\\|", 2);
-                    if (!isPlayableUrl(parts[0])) continue;
-                    if (live.getGroups().isEmpty()) live.getGroups().add(Group.create());
-                    Group group = live.getGroups().get(live.getGroups().size() - 1);
-                    Channel channel = group.find(Channel.create(split[0]));
                     if (parts.length > 1) setting.headers(parts[1]);
                     channel.getUrls().add(parts[0]);
                     setting.copy(channel);
@@ -196,6 +177,7 @@ public class LiveParser {
             else if (line.startsWith("referer")) referer(line);
             else if (line.startsWith("#EXTHTTP:")) header(line);
             else if (line.startsWith("forceKey")) forceKey(line);
+            else if (line.startsWith("#EXTVLCOPT:http-cookie")) cookie(line);
             else if (line.startsWith("#EXTVLCOPT:http-origin")) origin(line);
             else if (line.startsWith("#EXTVLCOPT:http-user-agent")) ua(line);
             else if (line.startsWith("#EXTVLCOPT:http-referrer")) referrer(line);
@@ -274,6 +256,14 @@ public class LiveParser {
             } catch (Exception e) {
                 e.printStackTrace();
                 format = null;
+            }
+        }
+
+        private void cookie(String line) {
+            try {
+                header.put("Cookie", line.split("(?i)cookie=")[1].trim().replace("\"", ""));
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
 

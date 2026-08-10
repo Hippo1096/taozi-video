@@ -2,7 +2,6 @@ package com.fongmi.android.tv.bean;
 
 import android.text.TextUtils;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import androidx.annotation.Nullable;
@@ -10,7 +9,6 @@ import androidx.annotation.Nullable;
 import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.gson.HeaderAdapter;
-import com.fongmi.android.tv.setting.LiveEpgSetting;
 import com.fongmi.android.tv.utils.Formatters;
 import com.fongmi.android.tv.utils.ImgUtil;
 import com.fongmi.android.tv.utils.ResUtil;
@@ -31,8 +29,6 @@ import java.util.Map;
 import java.util.Objects;
 
 public class Channel {
-
-    private static final String DEFAULT_LIVE_UA = "Lavf/59.27.100";
 
     @SerializedName("urls")
     private List<String> urls;
@@ -267,7 +263,7 @@ public class Channel {
     }
 
     public void setDataList(List<Epg> list) {
-        this.dataList = list == null ? new ArrayList<>() : new ArrayList<>(list);
+        this.dataList = new ArrayList<>(list);
     }
 
     public int getIndex() {
@@ -305,13 +301,7 @@ public class Channel {
     }
 
     public void loadLogo(ImageView view) {
-        int width = 0, height = 0;
-        ViewGroup.LayoutParams params = view.getLayoutParams();
-        if (params != null && params.width > 0 && params.height > 0) {
-            width = params.width;
-            height = params.height;
-        }
-        ImgUtil.load(getName(), getLogo(), view, false, width, height);
+        ImgUtil.load(getName(), getLogo(), view, false);
     }
 
     public void switchLine(boolean next) {
@@ -365,14 +355,13 @@ public class Channel {
         if (!live.getOrigin().isEmpty() && getOrigin().isEmpty()) setOrigin(live.getOrigin());
         if (!live.getCatchup().isEmpty() && getCatchup().isEmpty()) setCatchup(live.getCatchup());
         if (!live.getReferer().isEmpty() && getReferer().isEmpty()) setReferer(live.getReferer());
-        if (!LiveEpgSetting.getUrl().isEmpty() || (!LiveEpgSetting.getEffectiveUrl(live).isEmpty() && !getEpg().startsWith("http"))) LiveEpgSetting.apply(live, this);
+        if (live.getEpg().contains("{") && !getEpg().startsWith("http")) setEpg(live.getEpgApi().replace("{id}", getTvgId()).replace("{name}", getTvgName()).replace("{epg}", getEpg()));
         if (live.getLogo().contains("{") && !getLogo().startsWith("http")) setLogo(live.getLogo().replace("{id}", getTvgId()).replace("{name}", getTvgName()).replace("{logo}", getLogo()));
     }
 
     public Map<String, String> getHeaders() {
         Map<String, String> headers = new HashMap<>(getHeader());
         if (!getUa().isEmpty()) headers.put(HttpHeaders.USER_AGENT, getUa());
-        else if (headers.keySet().stream().noneMatch(HttpHeaders.USER_AGENT::equalsIgnoreCase)) headers.put(HttpHeaders.USER_AGENT, DEFAULT_LIVE_UA);
         if (!getOrigin().isEmpty()) headers.put(HttpHeaders.ORIGIN, getOrigin());
         if (!getReferer().isEmpty()) headers.put(HttpHeaders.REFERER, getReferer());
         return headers;

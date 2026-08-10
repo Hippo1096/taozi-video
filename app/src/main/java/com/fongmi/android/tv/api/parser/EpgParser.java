@@ -37,30 +37,30 @@ public class EpgParser {
 
     private static final String TAG = EpgParser.class.getSimpleName();
 
-    private static ZoneId zoneIdOf(String tz) {
-        if (tz.isEmpty()) return ZoneId.systemDefault();
-        try {
-            return ZoneId.of(tz);
-        } catch (Exception ignored) {
-            return ZoneId.systemDefault();
-        }
-    }
-
     private static OffsetDateTime parseFull(String source, ZoneId zoneId) {
         String s = source.trim();
-        int len = s.length();
         try {
-            if (len >= 20) return OffsetDateTime.parse(s, s.charAt(len - 3) == ':' ? Formatters.EPG_FULL_COLON : Formatters.EPG_FULL);
-            return LocalDateTime.parse(len > 14 ? s.substring(0, 14) : s, Formatters.EPG_FULL_NO_TZ).atZone(zoneId).toOffsetDateTime();
+            String time = s.length() > 14 ? s.substring(0, 14) : s;
+            String offset = s.length() > 14 ? s.substring(14).trim() : "";
+            if (!offset.isEmpty()) return parseOffset(time + " " + offset);
+            return LocalDateTime.parse(time, Formatters.EPG_FULL_NO_TZ).atZone(zoneId).toOffsetDateTime();
         } catch (Exception e) {
             Log.w(TAG, "parseFull failed: " + s + " -> " + e.getMessage());
             return OffsetDateTime.ofInstant(Instant.EPOCH, ZoneOffset.UTC);
         }
     }
 
+    private static OffsetDateTime parseOffset(String source) {
+        try {
+            return OffsetDateTime.parse(source, Formatters.EPG_FULL);
+        } catch (Exception ignored) {
+            return OffsetDateTime.parse(source, Formatters.EPG_FULL_COLON);
+        }
+    }
+
     public static void start(Live live, String url) throws Exception {
         long t0 = System.currentTimeMillis();
-        File file = Path.epg(cacheFileName(url));
+        File file = Path.epg(UrlUtil.path(url));
         String reason = refreshReason(file);
         boolean refresh = reason != null;
         Log.i(TAG, "start url=" + url + " file=" + file.getName() + " refresh=" + refresh + (refresh ? " reason=" + reason : ""));
@@ -69,14 +69,6 @@ public class EpgParser {
         if (gzip) readGzip(live, file, refresh);
         else readXml(live, file);
         Log.i(TAG, "start done elapsed=" + (System.currentTimeMillis() - t0) + "ms");
-    }
-
-    private static String cacheFileName(String url) {
-        String name = UrlUtil.path(url);
-        if (!name.isEmpty()) return name;
-        String host = UrlUtil.host(url);
-        if (host.isEmpty()) host = "epg";
-        return host.replaceAll("[^A-Za-z0-9._-]", "_") + "_" + Integer.toHexString(url.hashCode()) + ".xml";
     }
 
     public static Epg getEpg(String xml, String key, ZoneId zoneId) {
@@ -119,7 +111,7 @@ public class EpgParser {
     }
 
     private static void readXml(Live live, File file) throws Exception {
-        ZoneId zoneId = zoneIdOf(live.getTimeZone());
+        ZoneId zoneId = live.getZoneId();
         Map<String, Channel> liveChannelMap = prepareLiveChannels(live);
         XmlData xmlData = parseXmlData(file);
         ProgrammeResult result = processProgramme(xmlData, liveChannelMap, zoneId);

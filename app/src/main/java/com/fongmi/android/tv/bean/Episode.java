@@ -2,6 +2,7 @@ package com.fongmi.android.tv.bean;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
@@ -20,12 +21,10 @@ public class Episode implements Parcelable, Diffable<Episode> {
     private String desc;
     @SerializedName("url")
     private String url;
-    private transient String displayName;
 
     private int index;
     private int number;
     private boolean selected;
-    private TmdbEpisode tmdbEpisode;
 
     private Episode(String name, String desc, String url) {
         this.number = Util.getNumber(name);
@@ -54,7 +53,7 @@ public class Episode implements Parcelable, Diffable<Episode> {
     }
 
     public String getName() {
-        return isEmpty(name) ? "" : name;
+        return TextUtils.isEmpty(name) ? "" : name;
     }
 
     public void setName(String name) {
@@ -62,23 +61,11 @@ public class Episode implements Parcelable, Diffable<Episode> {
     }
 
     public String getDesc() {
-        return isEmpty(desc) ? "" : desc;
-    }
-
-    public String getRawDisplayName() {
-        return getDesc().concat(getName());
-    }
-
-    public String getDisplayName() {
-        return isEmpty(displayName) ? getRawDisplayName() : displayName;
-    }
-
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+        return TextUtils.isEmpty(desc) ? "" : desc;
     }
 
     public String getUrl() {
-        return isEmpty(url) ? "" : url;
+        return TextUtils.isEmpty(url) ? "" : url;
     }
 
     public int getIndex() {
@@ -105,14 +92,6 @@ public class Episode implements Parcelable, Diffable<Episode> {
         setSelected(false);
     }
 
-    public TmdbEpisode getTmdbEpisode() {
-        return tmdbEpisode;
-    }
-
-    public void setTmdbEpisode(TmdbEpisode tmdbEpisode) {
-        this.tmdbEpisode = tmdbEpisode;
-    }
-
     public int getScore(String name, int number) {
         if (getName().equalsIgnoreCase(name)) return 100;
         if (number != -1 && getNumber() == number) return 80;
@@ -124,16 +103,6 @@ public class Episode implements Parcelable, Diffable<Episode> {
     public boolean matchesName(Episode other) {
         if (other == null) return false;
         return getName().equalsIgnoreCase(other.getName());
-    }
-
-    public boolean matches(Episode other) {
-        if (other == null) return false;
-        if (!isEmpty(getUrl()) && !isEmpty(other.getUrl())) return getUrl().equals(other.getUrl());
-        return matchesName(other);
-    }
-
-    private boolean isEmpty(String value) {
-        return value == null || value.length() == 0;
     }
 
     public Episode trans() {

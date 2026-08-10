@@ -4,8 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/shape_danmaku_sheet_panel"
-    android:clickable="true"
     android:orientation="vertical">
 
     <androidx.appcompat.widget.LinearLayoutCompat
@@ -19,8 +17,9 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/keyword"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:background="@drawable/shape_danmaku_search_keyword"
             android:hint="@string/search_keyword"
             android:imeOptions="actionSearch"
@@ -29,6 +28,15 @@
             android:nextFocusDown="@id/recycler"
             android:singleLine="true"
             android:textSize="14sp" />
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/setting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:focusable="true"
+            android:src="@drawable/ic_action_setting" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -49,10 +57,8 @@
         android:id="@+id/recycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
         android:clipChildren="false"
         android:clipToPadding="false"
-        android:focusable="true"
         android:overScrollMode="never"
         android:paddingStart="24dp"
         android:paddingEnd="24dp"

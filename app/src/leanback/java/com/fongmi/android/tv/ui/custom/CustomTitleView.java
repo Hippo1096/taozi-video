@@ -42,10 +42,6 @@ public class CustomTitleView extends MaterialTextView {
     public void setListener(Listener listener) {
         this.listener = listener;
         setOnClickListener(v -> listener.showDialog());
-        setOnLongClickListener(v -> {
-            listener.reloadConfig();
-            return true;
-        });
     }
 
     private boolean hasEvent(KeyEvent event) {
@@ -97,7 +93,5 @@ public class CustomTitleView extends MaterialTextView {
         void showDialog();
 
         void onRefresh();
-
-        void reloadConfig();
     }
 }

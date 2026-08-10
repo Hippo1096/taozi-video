@@ -1,7 +1,6 @@
 package com.fongmi.android.tv.ui.adapter;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -18,7 +17,6 @@ public class PartAdapter extends RecyclerView.Adapter<PartAdapter.ViewHolder> {
     private final OnClickListener mListener;
     private final List<String> mItems;
     private final int maxWidth;
-    private int nextFocusDown;
     private int nextFocusUp;
 
     public PartAdapter(OnClickListener listener) {
@@ -39,13 +37,7 @@ public class PartAdapter extends RecyclerView.Adapter<PartAdapter.ViewHolder> {
     }
 
     public void setNextFocusUp(int nextFocusUp) {
-        setNextFocus(nextFocusUp, nextFocusDown);
-    }
-
-    public void setNextFocus(int nextFocusUp, int nextFocusDown) {
-        if (this.nextFocusUp == nextFocusUp && this.nextFocusDown == nextFocusDown) return;
         this.nextFocusUp = nextFocusUp;
-        this.nextFocusDown = nextFocusDown;
         notifyDataSetChanged();
     }
 
@@ -65,8 +57,7 @@ public class PartAdapter extends RecyclerView.Adapter<PartAdapter.ViewHolder> {
         String text = mItems.get(position);
         holder.binding.text.setText(text);
         holder.binding.text.setMaxWidth(maxWidth);
-        holder.binding.text.setNextFocusUpId(nextFocusUp == 0 ? View.NO_ID : nextFocusUp);
-        holder.binding.text.setNextFocusDownId(nextFocusDown == 0 ? View.NO_ID : nextFocusDown);
+        holder.binding.text.setNextFocusUpId(nextFocusUp);
         holder.binding.getRoot().setOnClickListener(v -> mListener.onItemClick(text));
     }
 

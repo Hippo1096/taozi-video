@@ -13,7 +13,6 @@ import androidx.annotation.NonNull;
 
 import com.fongmi.android.tv.App;
 import com.fongmi.android.tv.setting.LiveSetting;
-import com.fongmi.android.tv.setting.PlayerSetting;
 import com.fongmi.android.tv.utils.ResUtil;
 import com.fongmi.android.tv.utils.Util;
 
@@ -37,7 +36,6 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
     private boolean touch;
     private boolean lock;
     private float bright;
-    private float currentBright;
     private float volume;
     private float scale;
     private long time;
@@ -54,7 +52,6 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
         this.videoView = videoView;
         this.activity = activity;
         this.scale = 1.0f;
-        applyBrightness();
     }
 
     public boolean onTouchEvent(MotionEvent e) {
@@ -62,18 +59,9 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
         if (action == MotionEvent.ACTION_DOWN) multiTouch = false;
         if (action == MotionEvent.ACTION_POINTER_DOWN) multiTouch = true;
         if (action == MotionEvent.ACTION_UP) listener.onTouchEnd();
-        if (changeBright && action == MotionEvent.ACTION_UP) PlayerSetting.putBrightness(currentBright);
         if (changeSpeed && action == MotionEvent.ACTION_UP) listener.onSpeedEnd();
         if (changeTime && action == MotionEvent.ACTION_UP) listener.onSeekEnd(time);
         return e.getPointerCount() == 2 ? scaleDetector.onTouchEvent(e) : detector.onTouchEvent(e);
-    }
-
-    private void applyBrightness() {
-        float brightness = PlayerSetting.getBrightness();
-        if (brightness < 0) return;
-        WindowManager.LayoutParams attributes = activity.getWindow().getAttributes();
-        attributes.screenBrightness = brightness;
-        activity.getWindow().setAttributes(attributes);
     }
 
     public void resetScale() {
@@ -102,11 +90,8 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
     }
 
     private boolean isSide(MotionEvent e) {
-        // 使用 getRawX 获取屏幕绝对坐标，避免横屏时 View 坐标系统问题
-        int width = ResUtil.getScreenWidth(activity);
-        int four = width / 4;
-        float x = e.getRawX();
-        return !(x > four) || !(x < four * 3);
+        int four = ResUtil.getScreenWidth(activity) / 4;
+        return !(e.getX() > four) || !(e.getX() < four * 3);
     }
 
     private void reset() {
@@ -117,7 +102,6 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
         changeBright = false;
         changeVolume = false;
         bright = Util.getBrightness(activity);
-        currentBright = bright;
         volume = manager.getStreamVolume(AudioManager.STREAM_MUSIC);
     }
 
@@ -156,7 +140,7 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
 
     @Override
     public boolean onSingleTapConfirmed(@NonNull MotionEvent e) {
-        if (isMultiple(e) || changeScale) return true;
+        if (isMultiple(e) || isEdge(e) || changeScale) return true;
         listener.onSingleTap();
         return true;
     }
@@ -187,10 +171,8 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
     }
 
     private void checkSide(MotionEvent e2) {
-        // 使用 getRawX 获取屏幕绝对坐标，确保横屏时正确判断左右区域
-        int width = ResUtil.getScreenWidth(activity);
-        float x = e2.getRawX();
-        if (x > width / 2f) changeVolume = true;
+        int half = ResUtil.getScreenWidth(activity) / 2;
+        if (e2.getX() > half) changeVolume = true;
         else changeBright = true;
     }
 
@@ -202,7 +184,6 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
         WindowManager.LayoutParams attributes = activity.getWindow().getAttributes();
         attributes.screenBrightness = brightness;
         activity.getWindow().setAttributes(attributes);
-        currentBright = brightness;
         listener.onBright((int) (brightness * 100));
     }
 
@@ -231,7 +212,7 @@ public class CustomKeyDown extends GestureDetector.SimpleOnGestureListener imple
     @Override
     public boolean onScale(@NonNull ScaleGestureDetector detector) {
         scale *= detector.getScaleFactor();
-        scale = Math.max(1.0f, Math.min(scale, 5.0f));
+        scale = Math.clamp(scale, 1.0f, 5.0f);
         videoView.setPivotX(detector.getFocusX());
         videoView.setPivotY(detector.getFocusY());
         videoView.setScaleX(scale);

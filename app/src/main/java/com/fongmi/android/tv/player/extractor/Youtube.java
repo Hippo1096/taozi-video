@@ -11,7 +11,6 @@ import com.fongmi.android.tv.bean.Sub;
 import com.fongmi.android.tv.bean.Vod;
 import com.fongmi.android.tv.event.RefreshEvent;
 import com.fongmi.android.tv.impl.NewPipeImpl;
-import com.fongmi.android.tv.player.Source;
 import com.fongmi.android.tv.utils.UrlUtil;
 
 import org.schabi.newpipe.extractor.ListExtractor;
@@ -51,13 +50,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
-public class Youtube implements Source.Extractor {
+public class YouTube implements Source.Extractor {
 
     private static final String DASH_NAMESPACE = "urn:mpeg:dash:schema:mpd:2011";
     private static final String XSI_NAMESPACE = "http://www.w3.org/2001/XMLSchema-instance";
     private static final String DASH_PROFILE = "urn:mpeg:dash:profile:isoff-on-demand:2011";
 
-    public Youtube() {
+    public YouTube() {
         NewPipe.init(NewPipeImpl.get(), Localization.fromLocale(Locale.getDefault()));
     }
 
@@ -191,7 +190,7 @@ public class Youtube implements Source.Extractor {
         String label = subtitle.getDisplayLanguageName();
         String language = subtitle.getLanguageTag();
         if (label == null || label.isEmpty()) label = language;
-        return Sub.create(label, url, language, MimeTypes.TEXT_VTT);
+        return Sub.from(label, url, language, MimeTypes.TEXT_VTT);
     }
 
     private String getSubtitleUrl(SubtitlesStream subtitle) {

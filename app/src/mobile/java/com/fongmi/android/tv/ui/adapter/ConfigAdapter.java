@@ -36,14 +36,7 @@ public class ConfigAdapter extends RecyclerView.Adapter<ConfigAdapter.ViewHolder
 
     public ConfigAdapter addAll(int type) {
         mItems = Config.getAll(type);
-        return this;
-    }
-
-    public ConfigAdapter addAllExcludingCurrent(int type, String currentUrl) {
-        mItems = Config.getAll(type);
-        if (!mItems.isEmpty() && !readOnly) {
-            mItems.removeIf(item -> item.getUrl().equals(currentUrl));
-        }
+        if (!mItems.isEmpty() && !readOnly) mItems.remove(0);
         return this;
     }
 
