@@ -417,8 +417,8 @@
       "key": "Jrsjs",
       "name": "⚽Jrs┃球迷",
       "type": 3,
-      "api": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/drpy2.min.js",
-      "ext": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/jrk.js",
+      "api": "assets://ext/drpy2.min.js",
+      "ext": "assets://ext/jrk.js",
       "style": {
         "type": "list"
       },
@@ -431,8 +431,8 @@
       "key": "酷奇",
       "name": "🎤酷奇┃MV",
       "type": 3,
-      "api": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/drpy2.min.js",
-      "ext": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/酷奇MV.js",
+      "api": "assets://ext/drpy2.min.js",
+      "ext": "assets://ext/酷奇MV.js",
       "style": {
         "type": "rect",
         "ratio": 1.597
@@ -462,8 +462,8 @@
       "key": "虎牙直播js",
       "name": "🐯虎牙┃直播",
       "type": 3,
-      "api": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/drpy2.js",
-      "ext": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/huya2.js",
+      "api": "assets://ext/drpy2.min.js",
+      "ext": "assets://ext/huya2.js",
       "style": {
         "type": "rect",
         "ratio": 1.755
@@ -478,8 +478,8 @@
       "key": "斗鱼js",
       "name": "🐟斗鱼┃直播",
       "type": 3,
-      "api": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/drpy2.min.js",
-      "ext": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/斗鱼直播.js",
+      "api": "assets://ext/drpy2.min.js",
+      "ext": "assets://ext/斗鱼直播.js",
       "style": {
         "type": "rect",
         "ratio": 1.755
@@ -494,8 +494,8 @@
       "key": "有声小说js",
       "name": "🎧有声┃小说",
       "type": 3,
-      "api": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/drpy2.min.js",
-      "ext": "https://gh-proxy.net/https://raw.githubusercontent.com/fantaiying7/EXT/refs/heads/main/有声小说吧.js",
+      "api": "assets://ext/drpy2.min.js",
+      "ext": "assets://ext/有声小说吧.js",
       "style": {
         "type": "rect",
         "ratio": 1
