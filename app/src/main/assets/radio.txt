@@ -1,0 +1,8 @@
+# 国内电台直播源
+# 格式: 频道名,URL
+CRI 环球资讯广播,http://sk.cri.cn/905.m3u8
+CRI 轻松调频,http://sk.cri.cn/915.m3u8
+CNR 中国之声,http://ngcdn001.cnr.cn/live/zgzs/index.m3u8
+CNR 经济之声,http://ngcdn002.cnr.cn/live/jjzs/index.m3u8
+CNR 音乐之声,http://ngcdn003.cnr.cn/live/yyzs/index.m3u8
+CNR 交通广播,http://ngcdn016.cnr.cn/live/jtgb/index.m3u8
