@@ -83,7 +83,7 @@ public class HistoryDialog extends BaseAlertDialog implements ConfigAdapter.OnCl
         binding.recycler.setHasFixedSize(false);
         if (isFull()) binding.recycler.setMaxHeight(ResUtil.dp2px(264));
         binding.recycler.addItemDecoration(new SpaceItemDecoration(1, 8));
-        binding.recycler.setAdapter(adapter.readOnly(readOnly).addAll(type));
+        binding.recycler.setAdapter(adapter.readOnly(readOnly).addAllExcludingCurrent(type, com.fongmi.android.tv.api.config.VodConfig.getUrl()));
     }
 
     @Override

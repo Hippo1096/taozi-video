@@ -50,6 +50,8 @@ abstract class BaseConfig {
             if (config == null) config = defaultConfig();
             Server.get().start();
             load(config);
+            if (config.equals(this.config)) config.update();
+            postEvent();
         } catch (Throwable e) {
             e.printStackTrace();
         }

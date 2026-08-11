@@ -17,7 +17,6 @@ public class Task {
 
     private static final ListeningExecutorService executor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(5));
     private static final ListeningExecutorService largeExecutor = MoreExecutors.listeningDecorator(Executors.newFixedThreadPool(20));
-    private static final ListeningExecutorService serialExecutor = MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor());
     private static final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     public static ListeningExecutorService executor() {
@@ -25,6 +24,10 @@ public class Task {
     }
 
     public static ListeningExecutorService largeExecutor() {
+        return largeExecutor;
+    }
+
+    public static ListeningExecutorService searchExecutor() {
         return largeExecutor;
     }
 
@@ -42,10 +45,6 @@ public class Task {
 
     public static void execute(Runnable task) {
         executor.execute(task);
-    }
-
-    public static void executeSerial(Runnable task) {
-        serialExecutor.execute(task);
     }
 
     public static void schedule(Runnable task, long delay, TimeUnit unit) {

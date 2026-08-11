@@ -79,11 +79,7 @@ public class ResUtil {
     }
 
     public static boolean isPad() {
-        return isPad(App.get());
-    }
-
-    public static boolean isPad(Context context) {
-        return context.getResources().getConfiguration().smallestScreenWidthDp >= 600;
+        return App.get().getResources().getConfiguration().smallestScreenWidthDp >= 600;
     }
 
     public static int sp2px(int sp) {

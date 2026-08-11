@@ -51,47 +51,43 @@ public class Path {
     }
 
     public static File tv() {
-        return mkdir(new File(root(), "TV"));
+        return mkdir(new File(root() + File.separator + "TV"));
     }
 
     public static File so() {
-        return mkdir(new File(files(), "so"));
+        return mkdir(new File(files() + File.separator + "so"));
     }
 
     public static File js() {
-        return mkdir(new File(cache(), "js"));
+        return mkdir(new File(cache() + File.separator + "js"));
     }
 
     public static File py() {
-        return mkdir(new File(cache(), "py"));
+        return mkdir(new File(cache() + File.separator + "py"));
     }
 
     public static File jar() {
-        return mkdir(new File(cache(), "jar"));
+        return mkdir(new File(cache() + File.separator + "jar"));
+    }
+
+    public static File exo() {
+        return mkdir(new File(cache() + File.separator + "exo"));
     }
 
     public static File exoCache() {
-        return mkdir(new File(cache(), "exo"));
-    }
-
-    public static File mpvCache() {
-        return mkdir(new File(cache(), "mpv"));
-    }
-
-    public static File mpv() {
-        return mkdir(new File(tv(), "mpv"));
+        return exo();
     }
 
     public static File epg() {
-        return mkdir(new File(cache(), "epg"));
+        return mkdir(new File(cache() + File.separator + "epg"));
     }
 
     public static File jpa() {
-        return mkdir(new File(cache(), "jpa"));
+        return mkdir(new File(cache() + File.separator + "jpa"));
     }
 
     public static File thunder() {
-        return mkdir(new File(cache(), "thunder"));
+        return mkdir(new File(cache() + File.separator + "thunder"));
     }
 
     public static File root(String name) {
@@ -108,10 +104,6 @@ public class Path {
 
     public static File files(String name) {
         return new File(files(), name);
-    }
-
-    public static File mpv(String name) {
-        return new File(mpv(), name);
     }
 
     public static File epg(String name) {

@@ -6,6 +6,7 @@ import android.os.SystemClock;
 import com.fongmi.android.tv.R;
 import com.fongmi.android.tv.bean.Episode;
 import com.fongmi.android.tv.exception.ExtractException;
+import com.fongmi.android.tv.player.Source;
 import com.fongmi.android.tv.utils.Download;
 import com.fongmi.android.tv.utils.ResUtil;
 import com.fongmi.android.tv.utils.UrlUtil;
@@ -33,7 +34,7 @@ public class Thunder implements Source.Extractor {
 
     @Override
     public String fetch(String url) throws Exception {
-        return url.startsWith("magnet") ? addTorrentTask(UrlUtil.uri(url)) : addThunderTask(url);
+        return url.startsWith("magnet") ? addTorrentTask(Uri.parse(url)) : addThunderTask(url);
     }
 
     private String addTorrentTask(Uri uri) throws Exception {

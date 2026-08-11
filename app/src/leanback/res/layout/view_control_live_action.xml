@@ -20,24 +20,16 @@
             android:text="@string/play_config" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/home"
+            android:id="@+id/source"
             style="@style/Control"
             android:layout_marginEnd="8dp"
-            tools:text="首頁" />
+            android:text="@string/live_control_source" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/action"
             style="@style/Control"
             android:layout_marginEnd="8dp"
             android:text="@string/play" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/line"
-            style="@style/Control"
-            android:layout_marginEnd="8dp"
-            android:visibility="gone"
-            tools:text="來源 1"
-            tools:visibility="visible" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/player"
@@ -65,6 +57,14 @@
             style="@style/Control"
             android:layout_marginEnd="8dp"
             android:text="@string/play_scale" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/line"
+            style="@style/Control"
+            android:layout_marginEnd="8dp"
+            android:visibility="gone"
+            tools:text="來源 1"
+            tools:visibility="visible" />
 
         <com.fongmi.android.tv.ui.custom.CustomUpDownView
             android:id="@+id/text"
