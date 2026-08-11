@@ -104,7 +104,7 @@
 
 ## 待继续
 
-- [ ] GitHub Actions 验证撤销错误同步后的四 APK 构建
+- [x] GitHub Actions #16 验证撤销错误同步后的四 APK 构建；Release `v5.5.6-202608110828`
 - [ ] 若未来重做 FongMi 同步，必须迁移完整版本契约，不按相似度批量覆盖
 - [ ] 确认 OfflineBootstrap.java 与新 upstream 兼容
 - [ ] 业务侧刷新饭太硬 JSON 后，再回写本仓 assets
