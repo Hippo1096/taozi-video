@@ -29,3 +29,13 @@ plans/
 ReleaseDownloads/
 _work/
 .tokensave
+
+# qist 大型可选运行时二进制：构建期从上游下载，不污染仓库
+app/src/main/assets/qist/lib/tgsearch
+app/src/main/assets/qist/lib/*.gz
+app/src/main/assets/qist/lib/*.md5
+app/src/main/assets/qist/lib/tgsearch.md5
+app/src/main/assets/qist/json/*.db.gz
+app/src/main/assets/qist/json/*.json.db.gz
+app/src/main/assets/qist/runtime/
+
