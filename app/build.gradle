@@ -67,9 +67,9 @@ android {
                 keyPassword releaseKeyPassword
                 storePassword localProps['storePassword']
             }
-            // 酷开 Android 7 的旧安装器需要传统 JAR(V1) 签名；同时保留 V2。
-            enableV1Signing = true
-            enableV2Signing = true
+            // AGP 9 使用 Property，必须显式 set；否则旧式赋值不会写入最终签名配置。
+            enableV1Signing.set(true)
+            enableV2Signing.set(true)
         }
     }
 
