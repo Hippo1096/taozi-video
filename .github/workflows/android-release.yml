@@ -176,7 +176,7 @@ jobs:
           apk="$(find Release/apk -maxdepth 1 -type f -name 'leanback-armeabi_v7a*.apk' -print -quit)"
           test -n "$apk"
           mv "$apk" Release/apk/taozi-tv-skyworth-65v9-android7-armeabi_v7a.apk
-          apksigner verify --verbose --print-certs Release/apk/taozi-tv-skyworth-65v9-android7-armeabi_v7a.apk | tee /tmp/apksigner.txt
+          "$ANDROID_HOME/build-tools/36.0.0/apksigner" verify --verbose --print-certs Release/apk/taozi-tv-skyworth-65v9-android7-armeabi_v7a.apk | tee /tmp/apksigner.txt
           grep -q 'Verified using v1 scheme (JAR signing): true' /tmp/apksigner.txt
           grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' /tmp/apksigner.txt
 
