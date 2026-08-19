@@ -169,13 +169,16 @@ jobs:
               --no-daemon
           fi
 
-      - name: Rename Skyworth Android 7 artifact
+      - name: Rename and verify Skyworth Android 7 artifact
         if: ${{ inputs.device_profile == 'skyworth_65v9_android7' }}
         run: |
           set -euo pipefail
           apk="$(find Release/apk -maxdepth 1 -type f -name 'leanback-armeabi_v7a*.apk' -print -quit)"
           test -n "$apk"
           mv "$apk" Release/apk/taozi-tv-skyworth-65v9-android7-armeabi_v7a.apk
+          apksigner verify --verbose --print-certs Release/apk/taozi-tv-skyworth-65v9-android7-armeabi_v7a.apk | tee /tmp/apksigner.txt
+          grep -q 'Verified using v1 scheme (JAR signing): true' /tmp/apksigner.txt
+          grep -q 'Verified using v2 scheme (APK Signature Scheme v2): true' /tmp/apksigner.txt
 
       - name: Collect artifacts
         run: |

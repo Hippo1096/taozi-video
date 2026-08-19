@@ -75,6 +75,9 @@ android {
             minifyEnabled = true
             shrinkResources = true
             signingConfig = hasReleaseSigning ? signingConfigs.release : signingConfigs.debug
+            // 酷开 Android 7 的旧安装器需要传统 JAR(V1) 签名；同时保留 V2。
+            v1SigningEnabled = true
+            v2SigningEnabled = true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro', 'proguard-rules-media.pro'
         }
     }
