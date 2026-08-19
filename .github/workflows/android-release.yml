@@ -16,6 +16,14 @@ on:
           - auto
           - stable
           - beta
+      device_profile:
+        description: "Build profile"
+        required: false
+        default: standard
+        type: choice
+        options:
+          - standard
+          - skyworth_65v9_android7
       release_notes:
         description: "Release notes, use \\n for Markdown newlines"
         required: false
@@ -141,19 +149,33 @@ jobs:
           } > local.properties
           echo "Temporary release signing configured"
 
-      - name: Build four release APKs
+      - name: Build release APKs
         env:
           WEBHTV_RELEASE_TAG: ${{ steps.meta.outputs.tag }}
           WEBHTV_APK_SUFFIX: ${{ steps.meta.outputs.apk_suffix }}
+          DEVICE_PROFILE: ${{ inputs.device_profile }}
         run: |
           chmod +x ./gradlew
           rm -rf Release/apk
-          ./gradlew \
-            :app:assembleMobileArm64_v8aRelease \
-            :app:assembleMobileArmeabi_v7aRelease \
-            :app:assembleLeanbackArm64_v8aRelease \
-            :app:assembleLeanbackArmeabi_v7aRelease \
-            --no-daemon
+          if [ "$DEVICE_PROFILE" = "skyworth_65v9_android7" ]; then
+            # 创维 65V9 / 8S88 / Android 7：仅构建遥控器版 ARM32，兼容性优先。
+            ./gradlew :app:assembleLeanbackArmeabi_v7aRelease --no-daemon
+          else
+            ./gradlew \
+              :app:assembleMobileArm64_v8aRelease \
+              :app:assembleMobileArmeabi_v7aRelease \
+              :app:assembleLeanbackArm64_v8aRelease \
+              :app:assembleLeanbackArmeabi_v7aRelease \
+              --no-daemon
+          fi
+
+      - name: Rename Skyworth Android 7 artifact
+        if: ${{ inputs.device_profile == 'skyworth_65v9_android7' }}
+        run: |
+          set -euo pipefail
+          apk="$(find Release/apk -maxdepth 1 -type f -name 'leanback-armeabi_v7a*.apk' -print -quit)"
+          test -n "$apk"
+          mv "$apk" Release/apk/taozi-tv-skyworth-65v9-android7-armeabi_v7a.apk
 
       - name: Collect artifacts
         run: |
